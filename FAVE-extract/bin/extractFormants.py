@@ -80,7 +80,7 @@ import pickle
 import csv
 
 import numpy as np
-from itertools import tee, islice, izip
+from itertools import tee, islice
 from bisect import bisect_left
 
 from remeasure import remeasure
@@ -441,7 +441,7 @@ def checkLocation(file):
     """checks whether a given file exists at a given location"""
 
     if not os.path.exists(file):
-        print "ERROR:  Could not locate %s" % file
+        print("ERROR:  Could not locate %s" % file)
         sys.exit()
 
 
@@ -450,21 +450,21 @@ def checkSpeechSoftware(speechSoftware):
 
     if speechSoftware in ['ESPS', 'esps']:
         if os.name == 'nt':
-            print "ERROR:  ESPS was specified as the speech analysis program, but this option is not yet compatible with Windows"
+            print("ERROR:  ESPS was specified as the speech analysis program, but this option is not yet compatible with Windows")
             sys.exit()
         if not programExists('formant'):
-            print "ERROR:  ESPS was specified as the speech analysis program, but the command 'formant' is not in your path"
+            print("ERROR:  ESPS was specified as the speech analysis program, but the command 'formant' is not in your path")
             sys.exit()
         else:
             return 'esps'
     elif speechSoftware in ['praat', 'Praat']:
         if not ((PRAATPATH and programExists(speechSoftware, PRAATPATH)) or (os.name == 'posix' and programExists(speechSoftware)) or (os.name == 'nt' and programExists('praatcon.exe'))):
-            print "ERROR: Praat was specified as the speech analysis program, but the command 'praat' ('praatcon' for Windows) is not in your path"
+            print("ERROR: Praat was specified as the speech analysis program, but the command 'praat' ('praatcon' for Windows) is not in your path")
             sys.exit()
         else:
             return speechSoftware
     else:
-        print "ERROR: unsupported speech analysis software %s" % speechSoftware
+        print("ERROR: unsupported speech analysis software %s" % speechSoftware)
         sys.exit()
 
 
@@ -474,7 +474,7 @@ def checkTextGridFile(tgFile):
     checkLocation(tgFile)
     lines = open(tgFile, 'r').readlines()
     if 'File type = "' not in lines[0]:
-        print "ERROR:  %s does not appear to be a Praat TextGrid file (the string 'File type=' does not appear in the first line.)" % tgFile
+        print("ERROR:  %s does not appear to be a Praat TextGrid file (the string 'File type=' does not appear in the first line.)" % tgFile)
         sys.exit()
 
 
@@ -497,15 +497,15 @@ def checkTiers(tg):
         for i in range(ns):
             # even (in terms of indices) tiers must be phone tiers
             if tg[2 * i].name().split(' - ')[1].strip().upper() != "PHONE":
-                print "ERROR!  Tier %i should be phone tier but isn't." % 2 * i
+                print("ERROR!  Tier %i should be phone tier but isn't." % 2 * i)
                 sys.exit()
             # odd (in terms of indices) tiers must be word tiers
             elif tg[2 * i + 1].name().split(' - ')[1].strip().upper() != "WORD":
-                print "ERROR!  Tier %i should be word tier but isn't." % 2 * i + 1
+                print("ERROR!  Tier %i should be word tier but isn't." % 2 * i + 1)
                 sys.exit()
             # speaker name must be the same for phone and word tier
             elif tg[2 * i].name().split(' - ')[0].strip().upper() != tg[2 * i + 1].name().split(' - ')[0].strip().upper():
-                print "ERROR!  Speaker name does not match for tiers %i and %i." % (2 * i, 2 * i + 1)
+                print("ERROR!  Speaker name does not match for tiers %i and %i." % (2 * i, 2 * i + 1))
                 sys.exit()
             else:
                 # add speaker name to list of speakers
@@ -690,8 +690,8 @@ def getMeasurementPoint(phone, formants, times, intensity, measurementPointMetho
     elif measurementPointMethod == 'maxint':
         measurementPoint = maximumIntensity(intensity.intensities(), intensity.times())
     else:
-        print "ERROR: Unsupported measurement point selection method %s" % measurementPointMethod
-        print __doc__
+        print("ERROR: Unsupported measurement point selection method %s" % measurementPointMethod)
+        print(__doc__)
 
     return measurementPoint
 
@@ -743,8 +743,8 @@ def getSoundEditor():
     elif (PRAATPATH and programExists('praat', PRAATPATH)) or (os.name == 'posix' and programExists('praat')) or (os.name == 'nt' and programExists('praatcon.exe')):
         soundEditor = 'praat'
     else:
-        print "ERROR:  neither 'praat' ('praatcon' for Windows) nor 'sox' can be found in your path"
-        print "One of these two programs must be available for processing the audio file"
+        print("ERROR:  neither 'praat' ('praatcon' for Windows) nor 'sox' can be found in your path")
+        print("One of these two programs must be available for processing the audio file")
         sys.exit()
 
     return soundEditor
@@ -754,45 +754,45 @@ def getSpeakerBackground(speakername, speakernum):
     """prompts the user to enter background information for a given speaker"""
 
     speaker = Speaker()
-    print "Please enter background information for speaker %s:" % speakername
-    print "(Press [return] if correct; if not, simply enter new data (do not use [delete]).)"
-    speaker.name = raw_input("Name:\t\t\t%s\t" % speakername.strip())
+    print("Please enter background information for speaker %s:" % speakername)
+    print("(Press [return] if correct; if not, simply enter new data (do not use [delete]).)")
+    speaker.name = input("Name:\t\t\t%s\t" % speakername.strip())
     if not speaker.name:
         speaker.name = speakername.strip()
     try:
-        speaker.first_name = raw_input("First name:\t\t%s\t" % speaker.name.strip().split()[0])
+        speaker.first_name = input("First name:\t\t%s\t" % speaker.name.strip().split()[0])
         if not speaker.first_name:
             speaker.first_name = speaker.name.strip().split()[0]
         # some speakers' last names are not known!
         try:
             # NOTE:  only initial letter of speaker's last name is
             # automatically taken over from tier name
-            speaker.last_name = raw_input("Last name:\t\t%s\t" % speaker.name.strip().split()[1][0])
+            speaker.last_name = input("Last name:\t\t%s\t" % speaker.name.strip().split()[1][0])
             if not speaker.last_name:
                 speaker.last_name = speaker.name.strip().split()[1][0]
         except IndexError:
-            speaker.last_name = raw_input("Last name:\t\t")
+            speaker.last_name = input("Last name:\t\t")
     except:
         speaker.first_name = ''
         speaker.last_name = ''
-    speaker.sex = raw_input("Sex:\t\t\t")
+    speaker.sex = input("Sex:\t\t\t")
     # check that speaker sex is defined - this is required for the Mahalanobis
     # method!
     if formantPredictionMethod == "mahalanobis":
         if not speaker.sex:
-            print "ERROR!  Speaker sex must be defined for the 'mahalanobis' formantPredictionMethod!"
+            print("ERROR!  Speaker sex must be defined for the 'mahalanobis' formantPredictionMethod!")
             sys.exit()
-    speaker.age = raw_input("Age:\t\t\t")
+    speaker.age = input("Age:\t\t\t")
 ##    speaker.city = raw_input("City:\t\tPhiladelphia")
 # if not speaker.city:
 ##        speaker.city = "Philadelphia"
 ##    speaker.state = raw_input("State:\t\tPA")
 # if not speaker.state:
 ##        speaker.state = "PA"
-    speaker.ethnicity = raw_input("Ethnicity:\t\t")
-    speaker.location = raw_input("Location:\t\t")
-    speaker.year = raw_input("Year of recording:\t")
-    speaker.years_of_schooling = raw_input("Years of schooling:\t")
+    speaker.ethnicity = input("Ethnicity:\t\t")
+    speaker.location = input("Location:\t\t")
+    speaker.year = input("Year of recording:\t")
+    speaker.years_of_schooling = input("Years of schooling:\t")
     speaker.tiernum = speakernum * \
         2  # tiernum points to phone tier = first tier for given speaker
 
@@ -1085,7 +1085,7 @@ def measureVowel(phone, word, poles, bandwidths, times, intensity, measurementPo
         # (e.g. impossible to do a 25ms-window smoothing (default) on a 24ms vowel)
         # (second condition is for methods that add a 20 ms transition at the beginning of the vowel)
         if 2 * nSmoothing + 1 > len(times[0]):
-            print "\tERROR! Vowel %s in word %s is too short to be measured with selected value for smoothing parameter." % (phone.label, word.transcription)
+            print("\tERROR! Vowel %s in word %s is too short to be measured with selected value for smoothing parameter." % (phone.label, word.transcription))
             return None
         else:
             poles = [smoothTracks(p, nSmoothing) for p in poles]
@@ -1371,7 +1371,7 @@ def outputMeasurements(outputFormat, measurements, m_means, speaker, outputFile,
         if outputHeader:
             # speaker information
             s_dict = speaker.__dict__
-            s_keys = s_dict.keys()
+            s_keys = list(s_dict.keys())
             s_keys.sort()
 
             fw.write('\t'.join(s_keys))
@@ -1450,7 +1450,7 @@ def outputMeasurements(outputFormat, measurements, m_means, speaker, outputFile,
                          # measurement)
             fw.write('\n')
         fw.close()
-        print "Vowel measurements output in .txt format to the file %s" % (os.path.splitext(outputFile)[0] + ".txt")
+        print("Vowel measurements output in .txt format to the file %s" % (os.path.splitext(outputFile)[0] + ".txt"))
 
         # normalized measurements
         fw = open(os.path.splitext(outputFile)[0] + "_norm.txt", 'w')
@@ -1486,13 +1486,13 @@ def outputMeasurements(outputFormat, measurements, m_means, speaker, outputFile,
                 fw.write('\t')
             fw.write('\n')
         fw.close()
-        print "Normalized vowel measurements output in .txt format to the file %s" % (os.path.splitext(outputFile)[0] + "_norm.txt")
+        print("Normalized vowel measurements output in .txt format to the file %s" % (os.path.splitext(outputFile)[0] + "_norm.txt"))
 
         if tracks:
             with open(os.path.splitext(outputFile)[0]+".tracks", 'wb') as trackfile:
                 trackwriter = csv.writer(trackfile, delimiter = "\t", )
                 s_dict = speaker.__dict__
-                s_keys = s_dict.keys()
+                s_keys = list(s_dict.keys())
                 s_keys.sort()
                 speaker_attrs = [s_dict[x] for x in s_keys]
                 v_header = ['id', 'vowel', 'stress', 'pre_word', 'word', 'fol_word', 
@@ -1569,8 +1569,8 @@ def outputMeasurements(outputFormat, measurements, m_means, speaker, outputFile,
         plotnik.outputPlotnikFile(plt, os.path.splitext(outputFile)[
                                   0] + ".plt")  # explicitly generate different extensions for "both" option
     if outputFormat not in ['plotnik', 'Plotnik', 'plt', 'txt', 'text', 'both']:
-        print "ERROR: Unsupported output format %s" % outputFormat
-        print __doc__
+        print("ERROR: Unsupported output format %s" % outputFormat)
+        print(__doc__)
         sys.exit(0)
 
     # write summary of formant settings to file
@@ -1699,7 +1699,7 @@ def programExists(program, path=''):
         elif os.name == 'nt':
             pathDirs = os.environ['PATH'].split(';')
         else:
-            print "ERROR: did not recognize OS type '%s'. Paths to 'praat' and 'sox' must be specified manually" % os.name
+            print("ERROR: did not recognize OS type '%s'. Paths to 'praat' and 'sox' must be specified manually" % os.name)
             sys.exit()
         for p in pathDirs:
             if os.path.isfile(os.path.join(p, program)):
@@ -1737,11 +1737,11 @@ def readSpeakerFile(speakerFile):
     speaker_opts = speaker_parser.parse_args(["+"+speakerFile])
 
     if speaker_opts.speakernum is None and speaker_opts.tiernum is None:
-        print "Warning, analyzing first speaker by default."
+        print("Warning, analyzing first speaker by default.")
         setattr(speaker, "tiernum", 0)
     elif speaker_opts.tiernum:
         if speaker_opts.tiernum % 2 != 0:
-            print "Warning, invalid tiernum. Try specifying --speakernum instead"
+            print("Warning, invalid tiernum. Try specifying --speakernum instead")
         else:
             setattr(speaker, "tiernum", speaker_opts.tiernum)
     elif speaker_opts.speakernum:
@@ -1752,7 +1752,7 @@ def readSpeakerFile(speakerFile):
             vowelSystem = value
 
     speaker_opts_dict = speaker_opts.__dict__
-    speaker_opts_keys = [x for x in speaker_opts_dict.keys() if \
+    speaker_opts_keys = [x for x in list(speaker_opts_dict.keys()) if \
                             x not in ["tiernum", "speakernum", "vowelSystem"] and \
                             speaker_opts_dict[x] is not None]
 
@@ -1767,7 +1767,7 @@ def readSpeakerFile(speakerFile):
             # print "Added attribute %s with value %s to speaker object." %
             # (attribute, value)
         else:
-            print "WARNING!  Speaker object has not attribute %s (value %s)!" % (attribute, value)
+            print("WARNING!  Speaker object has not attribute %s (value %s)!" % (attribute, value))
         # set full name of speaker
         speaker.name = speaker.first_name + ' ' + speaker.last_name
     return speaker
@@ -1894,7 +1894,7 @@ def window(iterable, window_len=2, window_step=1):
     for skip_steps, itr in enumerate(iterators):
         for ignored in islice(itr, skip_steps):
             pass
-    window_itr = izip(*iterators)
+    window_itr = zip(*iterators)
     if window_step != 1:
         window_itr = islice(window_itr, step=window_step)
     return window_itr    
@@ -1909,14 +1909,14 @@ def whichSpeaker(speakers):
         speaker = getSpeakerBackground("", 0)
         return speaker
     # get speaker from list of tiers
-    print "Speakers in TextGrid:"
+    print("Speakers in TextGrid:")
     for i, s in enumerate(speakers):
-        print "%i.\t%s" % (i + 1, s)
+        print("%i.\t%s" % (i + 1, s))
     # user input is from 1 to number of speakers; index in speaker list one
     # less!
-    speaknum = int(raw_input("Which speaker should be analyzed (number)?  ")) - 1
-    if speaknum not in range(len(speakers)):
-        print "ERROR!  Please select a speaker number from 1 - %i.  " % (len(speakers) + 1)
+    speaknum = int(input("Which speaker should be analyzed (number)?  ")) - 1
+    if speaknum not in list(range(len(speakers))):
+        print("ERROR!  Please select a speaker number from 1 - %i.  " % (len(speakers) + 1))
         speaker = whichSpeaker(speakers)
         return speaker
     # plus, prompt for speaker background info and return speaker object
@@ -2031,7 +2031,7 @@ def writeLog(filename, wavFile, maxTime, meansFile, covsFile, opts):
         f.write(logtimes[i][2])
         f.write("\n")
     f.close()
-    print "\nWritten log file %s.\n" % filename
+    print("\nWritten log file %s.\n" % filename)
 
 
 #
@@ -2078,7 +2078,7 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
     elif os.name == 'posix':
         PRAATNAME = 'Praat'
     else:
-        print "WARNING: unknown OS type '%s' may not be supported" % os.name
+        print("WARNING: unknown OS type '%s' may not be supported" % os.name)
         PRAATNAME = 'Praat'
 
     # by default, assume that these files are located in the current directory
@@ -2113,19 +2113,19 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
     candidates = opts.candidates
     vowelSystem = opts.vowelSystem
     tracks = opts.tracks
-    print "Processed options."
+    print("Processed options.")
 
     # read CMU phoneset ("cmu_phoneset.txt")
     phoneset = cmu.read_phoneset(opts.phoneset)
-    print "Read CMU phone set."
+    print("Read CMU phone set.")
 
     # make sure the specified speech analysis program is in our path
     speechSoftware = checkSpeechSoftware(opts.speechSoftware)
-    print "Speech software to be used is %s." % speechSoftware
+    print("Speech software to be used is %s." % speechSoftware)
 
     # determine what program we'll use to extract portions of the audio file
     soundEditor = getSoundEditor()
-    print "Sound editor to be used is %s." % soundEditor
+    print("Sound editor to be used is %s." % soundEditor)
 
     # if we're using the Mahalanobis distance metric for vowel formant prediction,
     # we need to load files with the mean and covariance values
@@ -2133,7 +2133,7 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
         global means, covs
         means = loadMeans(meansFile)  # "means.txt"
         covs = loadCovs(covsFile)  # "covs.txt"
-        print "Read means and covs files for the Mahalanobis method."
+        print("Read means and covs files for the Mahalanobis method.")
 
     # put the list of stop words in upper or lower case to match the word
     # transcriptions
@@ -2167,7 +2167,7 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
         tg.read(tgFile)
         if opts.speaker:
             speaker = readSpeakerFile(opts.speaker)
-            print "Read speaker background information from .speaker file."
+            print("Read speaker background information from .speaker file.")
         else:
             speakers = checkTiers(tg)  # -> returns list of speakers
             # prompt user to choose speaker to be analyzed, and for background
@@ -2190,7 +2190,7 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
         # coding) -> only for chosen speaker
         words = getWordsAndPhones(tg, phoneset, speaker, vowelSystem)
                                   # (all initial vowels are counted here)                                 
-        print 'Identified vowels in the TextGrid.'
+        print('Identified vowels in the TextGrid.')
         global maxTime
         maxTime = tg.xmax()  # duration of TextGrid/sound file
         measurements = []
@@ -2234,24 +2234,24 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
             numV = getNumVowels(w)
             if numV == 0:
                 if opts.verbose:
-                    print ''
-                    print "\t\t\t...no vowels in word %s at %.3f." % (w.transcription, w.xmin)
+                    print('')
+                    print("\t\t\t...no vowels in word %s at %.3f." % (w.transcription, w.xmin))
                 continue
 
             # don't process this word if it's in the list of stop words
             if removeStopWords and w.transcription in opts.stopWords:
                 count_stopwords += numV
                 if opts.verbose:
-                    print ''
-                    print "\t\t\t...word %s at %.3f is stop word." % (w.transcription, w.xmin)
+                    print('')
+                    print("\t\t\t...word %s at %.3f is stop word." % (w.transcription, w.xmin))
                 continue
 
             # exclude uncertain transcriptions
             if uncertain.search(w.transcription):
                 count_uncertain += numV
                 if opts.verbose:
-                    print ''
-                    print "\t\t\t...word %s at %.3f is uncertain transcription." % (w.transcription, w.xmin)
+                    print('')
+                    print("\t\t\t...word %s at %.3f is uncertain transcription." % (w.transcription, w.xmin))
                 continue
 
             for p_index, p in enumerate(w.phones):
@@ -2327,8 +2327,8 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
                 vowelWavFile = vowelFileStem + '.wav'
 
                 if opts.verbose:
-                    print ''
-                    print "Extracting formants for vowel %s in word %s at %.3f" % (p.label, w.transcription, w.xmin)
+                    print('')
+                    print("Extracting formants for vowel %s in word %s at %.3f" % (p.label, w.transcription, w.xmin))
 
                 markTime(count_analyzed + 1, p.label + " in " + w.transcription)
 
@@ -2366,7 +2366,7 @@ def extractFormants(wavInput, tgInput, output, opts, SPATH='', PPATH=''):
         m_means = calculateMeans(measurements)
         # normalize measurements
         measurements, m_means = normalize(measurements, m_means)
-        print ''
+        print('')
         outputMeasurements(outputFormat, measurements, m_means, speaker, outputFile, outputHeader, opts.tracks)
 
         if opts.pickle:

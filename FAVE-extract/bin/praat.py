@@ -76,7 +76,7 @@ class Formant:
         elif len(line) == 1 and line[0] != '':  # line reads "xxx.xxxxx"
             format = "short"
         else:
-            print "WARNING!!!  Unknown format for Formant file!"
+            print("WARNING!!!  Unknown format for Formant file!")
 
         if format == "short":  # SHORT FORMANT FORMAT
             self.__xmin = round(float(line[0]), 3)  # start time
@@ -350,7 +350,7 @@ class Intensity:
         elif len(line) == 1 and line[0] != '':  # line reads "xxx.xxxxx"
             format = "short"
         else:
-            print "WARNING!!!  Unknown format for Intensity file!"
+            print("WARNING!!!  Unknown format for Intensity file!")
 
         if format == "short":  # SHORT FORMAT
             self.__xmin = round(float(line[0]), 3)  # start time (xmin)
@@ -464,7 +464,7 @@ class TextGrid:
         elif len(line) == 1 and line[0] != '':  # line reads "xxx.xxxxx"
             format = "short"
         else:
-            print "WARNING!!!  Unknown format for Formant file!"
+            print("WARNING!!!  Unknown format for Formant file!")
 
         if format == "short":  # SHORT TEXTGRID FORMAT
             self.__xmin = round(
@@ -508,7 +508,7 @@ class TextGrid:
                         itier.append(Point(jtim, jmrk))
                     self.append(itier)
             if self.__n != m:
-                print "In TextGrid.IntervalTier.read:  Error in number of tiers!"
+                print("In TextGrid.IntervalTier.read:  Error in number of tiers!")
             text.close()
         elif format == "long":  # LONG TEXTGRID FORMAT
             self.__xmin = round(
@@ -560,7 +560,7 @@ class TextGrid:
                         itier.append(Point(jtim, jmrk))
                     self.append(itier)
             if self.__n != m:
-                print "In TextGrid.IntervalTier.read:  Error in number of tiers!"
+                print("In TextGrid.IntervalTier.read:  Error in number of tiers!")
             text.close()
 
     def write(self, text):
@@ -573,7 +573,7 @@ class TextGrid:
         text.write('tiers? <exists>\n')
         text.write('size = %d\n' % self.__n)
         text.write('item []:\n')
-        for (tier, n) in zip(self.__tiers, range(1, self.__n + 1)):
+        for (tier, n) in zip(self.__tiers, list(range(1, self.__n + 1))):
             text.write('\titem [%d]:\n' % n)
             if tier.__class__ == IntervalTier:
                 text.write('\t\tclass = "IntervalTier"\n')
@@ -581,7 +581,7 @@ class TextGrid:
                 text.write('\t\txmin = %f\n' % tier.xmin())
                 text.write('\t\txmax = %f\n' % tier.xmax())
                 text.write('\t\tintervals: size = %d\n' % len(tier))
-                for (interval, o) in zip(tier, range(1, len(tier) + 1)):
+                for (interval, o) in zip(tier, list(range(1, len(tier) + 1))):
                     text.write('\t\t\tintervals [%d]:\n' % o)
                     text.write('\t\t\t\txmin = %f\n' % interval.xmin())
                     text.write('\t\t\t\txmax = %f\n' % interval.xmax())
@@ -592,7 +592,7 @@ class TextGrid:
                 text.write('\t\txmin = %f\n' % tier.xmin())
                 text.write('\t\txmax = %f\n' % tier.xmax())
                 text.write('\t\tpoints: size = %d\n' % len(tier))
-                for (point, o) in zip(tier, range(1, len(tier) + 1)):
+                for (point, o) in zip(tier, list(range(1, len(tier) + 1))):
                     text.write('\t\t\tpoints [%d]:\n' % o)
                     text.write('\t\t\t\ttime = %f\n' % point.time())
                     text.write('\t\t\t\tmark = "%s"\n' % point.mark())
@@ -662,7 +662,7 @@ class IntervalTier:
         text.write('xmin = %f\n' % self.__xmin)
         text.write('xmax = %f\n' % self.__xmax)
         text.write('intervals: size = %d\n' % self.__n)
-        for (interval, n) in zip(self.__intervals, range(1, self.__n + 1)):
+        for (interval, n) in zip(self.__intervals, list(range(1, self.__n + 1))):
             text.write('intervals [%d]:\n' % n)
             text.write('\txmin = %f\n' % interval.xmin())
             text.write('\txmax = %f\n' % interval.xmax())
@@ -692,10 +692,10 @@ class IntervalTier:
     def extend(self, newmin, newmax):
         # check that this is really an expansion
         if newmin > self.__xmin:
-            print "Error!  New minimum of tier %f exceeds old minimum %f." % (newmin, self.__xmin)
+            print("Error!  New minimum of tier %f exceeds old minimum %f." % (newmin, self.__xmin))
             sys.exit()
         if newmax < self.__xmax:
-            print "Error!  New maximum of tier %f is less than old maximum %f." % (newmax, self.__xmax)
+            print("Error!  New maximum of tier %f is less than old maximum %f." % (newmax, self.__xmax))
             sys.exit()
         # add new intervals at beginning and end
         self.sort_intervals()
@@ -726,15 +726,15 @@ class IntervalTier:
                 if i.xmax() < self.__intervals[z + 1].xmin():
                     self.__intervals.append(
                         Interval(i.xmax(), self.__intervals[z + 1].xmin(), "sp"))
-                    print "tidyup:  Added new interval %f:%f to tier %s." % (i.xmax(), self.__intervals[z + 1].xmin(), self.__name)
+                    print("tidyup:  Added new interval %f:%f to tier %s." % (i.xmax(), self.__intervals[z + 1].xmin(), self.__name))
                     self.__n = len(self.__intervals)
                     self.sort_intervals()
                     # update iteration range
                     end = len(self.__intervals) - 1
                 else:  # overlapping interval boundaries
                     overlaps.append((i, self.__intervals[z + 1], self.__name))
-                    print "WARNING!!!  Overlapping intervals!!!"
-                    print "%s and %s on tier %s." % (i, self.__intervals[z + 1], self.__name)
+                    print("WARNING!!!  Overlapping intervals!!!")
+                    print("%s and %s on tier %s." % (i, self.__intervals[z + 1], self.__name))
             z += 1
         return overlaps
 
@@ -806,7 +806,7 @@ class PointTier:
         text.write('xmin = %f\n' % self.__xmin)
         text.write('xmax = %f\n' % self.__xmax)
         text.write('points: size = %d\n' % self.__n)
-        for (point, n) in zip(self.__points, range(1, self.__n + 1)):
+        for (point, n) in zip(self.__points, list(range(1, self.__n + 1))):
             text.write('points [%d]:\n' % n)
             text.write('\ttime = %f\n' % point.time())
             text.write('\tmark = "%s"\n' % point.mark())

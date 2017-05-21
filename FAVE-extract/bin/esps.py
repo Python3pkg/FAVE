@@ -86,8 +86,8 @@ class Formant:
         p = os.popen('fea_print ' + STYLE_FILE + ' ' + fbFile)
         lines = p.readlines()
         if len(lines) < self.__nx:
-            print filename
-            print "ERROR:  number of samples from .pole file (%d) not equal to output of fea_print (%s)" % (self.__nx, len(lines))
+            print(filename)
+            print("ERROR:  number of samples from .pole file (%d) not equal to output of fea_print (%s)" % (self.__nx, len(lines)))
             sys.exit()
         for i in range(self.__nx):
             time = i * self.__dx + self.__x1

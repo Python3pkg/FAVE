@@ -510,7 +510,7 @@ def outputPlotnikFile(Plt, f):
             ' <' + ','.join([str(round(t[0], 0)) if t[0] else '' for t in Plt.means[p].trackmeans]) + '>')
         fw.write('\r')
     fw.close()
-    print "Vowel measurements output in .plt format to the file %s" % (f)
+    print("Vowel measurements output in .plt format to the file %s" % (f))
 
     # normalized values
     ff = os.path.splitext(f)[0] + ".pll"
@@ -559,7 +559,7 @@ def outputPlotnikFile(Plt, f):
             ' <' + ','.join([str(round(t[0], 0)) if t[0] else '' for t in Plt.means[p].trackmeans_norm]) + '>')
         fw.write('\r')
     fw.close()
-    print "Normalized vowel measurements output in .pll format to the file %s" % (os.path.splitext(f)[0] + ".pll")
+    print("Normalized vowel measurements output in .pll format to the file %s" % (os.path.splitext(f)[0] + ".pll"))
 
 
 def phila_system(i, phones, trans, fm, fp, fv, ps, fs, pc, phoneset):
@@ -874,7 +874,7 @@ def process_plt_file(filename):
         # EOF was reached, so this file only contains blank lines
         if line == '':  # if not even end-of-line character in next line, then end of file reached
             f.close()  # (added)
-            print "Closing empty file %s." % filename
+            print("Closing empty file %s." % filename)
             sys.exit()
         else:  # else:  strip end-of-line characters away,
             line = line.strip()
@@ -916,7 +916,7 @@ def process_plt_file(filename):
         # this file only contains blank lines
         if line == '':
             f.close()  # (added)
-            print "Closing file %s (no measurements)." % filename
+            print("Closing file %s (no measurements)." % filename)
             sys.exit()
         else:
             line = line.strip()
@@ -954,8 +954,8 @@ def process_plt_file(filename):
 
     # perform check on number of measurements/tokens
     if len(Plt.measurements) != int(Plt.N):
-        print "ERROR:  N's do not match for %s" % filename
-        print "len(Plt.measurements) is %s; Plt.N is %s." % (len(Plt.measurements), Plt.N)
+        print("ERROR:  N's do not match for %s" % filename)
+        print("len(Plt.measurements) is %s; Plt.N is %s." % (len(Plt.measurements), Plt.N))
         return None
     else:
         return Plt
